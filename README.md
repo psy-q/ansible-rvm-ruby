@@ -6,6 +6,11 @@ It can also set a default Ruby version per user.
 
 Stick this in your Ansible roles directory. I put it in `roles/ruby/rvm`.
 
+## Supported platforms
+
+* Debian wheezy
+
+It might work somewhere else, but I didn't check that. Canonical, they be mad.
 
 ## Example
 
