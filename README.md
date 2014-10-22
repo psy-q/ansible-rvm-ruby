@@ -9,7 +9,7 @@ Stick this in your Ansible roles directory. I put it in `roles/ruby/rvm`.
 
 ## Example
 
-This is how we can stick some Rubies on all our Rubified servers:
+This is how we can stick some Rubies on all our to-be-Rubified servers:
 
 ```
 - hosts: rubified_servers
