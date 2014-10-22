@@ -61,9 +61,3 @@
   sudo: true
   sudo_user: "{{ user }}"
   when: set_default
-
-- name: "RVM: Set default ruby to {{ version }}"
-  command: executable=/bin/bash bash -l -c 'rvm alias create default {{ version }}'
-  sudo: true
-  sudo_user: "{{ user }}"
-  when: default_ruby == version
