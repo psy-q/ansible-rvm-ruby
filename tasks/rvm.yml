@@ -1,0 +1,69 @@
+---
+- name: Check if RVM is installed
+  command: bash -l -c 'rvm --version'
+  register: rvm_is_installed
+  sudo: true
+  sudo_user: "{{ user }}"
+  ignore_errors: True
+
+- name: Install RVM
+  shell: curl -L https://get.rvm.io | bash -s stable
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: rvm_is_installed|failed
+  register: rvm_has_been_installed
+
+- name: Install a JRE if jRuby needs to be installed
+  apt: pkg=openjdk-7-jre state=present
+  when: version[:5] == "jruby"
+
+- name: Update RVM
+  sudo: true
+  sudo_user: "{{ user }}"
+  command: bash -l -c 'rvm get latest'
+
+- name: "RVM: Check if Ruby {{ version }} is installed"
+  command: bash -l -c 'rvm list | grep {{ version }}'
+  sudo: true
+  sudo_user: "{{ user }}"
+  register: ruby_is_installed
+  ignore_errors: True
+
+#- name: Install per-user profile snipped for RVM
+#  file: executable=/bin/bash bash -l -c 'rvm install {{ version }}'
+#  sudo: true
+#  sudo_user: {{ user }}
+#  when: (rvm_is_installed|success or rvm_has_been_installed|success) and ruby_is_installed|failed
+
+- name: Install RVM Ruby {{ version }}
+  command: executable=/bin/bash bash -l -c 'rvm install {{ version }}'
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: (rvm_is_installed|success or rvm_has_been_installed|success) and ruby_is_installed|failed
+  register: ruby_has_been_installed
+
+- name: "RVM: Check if Ruby {{ version }} has Bundler"
+  command: executable=/bin/bash bash -l -c 'rvm use {{ version }} && gem list bundler | grep bundler'
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: (rvm_has_been_installed|success or rvm_is_installed|success) and (ruby_is_installed|success or ruby_has_been_installed|success)
+  register: bundler_is_installed
+  ignore_errors: True
+
+- name: "RVM: Install bundler for Ruby {{ version }}"
+  command: executable=/bin/bash bash -l -c 'rvm use {{ version }} && gem install bundler'
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: bundler_is_installed|failed
+
+- name: "RVM: Set default ruby to {{ version }}"
+  command: executable=/bin/bash bash -l -c 'rvm alias create default {{ version }}'
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: set_default
+
+- name: "RVM: Set default ruby to {{ version }}"
+  command: executable=/bin/bash bash -l -c 'rvm alias create default {{ version }}'
+  sudo: true
+  sudo_user: "{{ user }}"
+  when: default_ruby == version

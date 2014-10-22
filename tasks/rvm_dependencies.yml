@@ -1,0 +1,23 @@
+---
+- name: Install Ruby compilation dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+    - build-essential
+    - curl
+    - bash
+    - libcurl4-openssl-dev
+    - libffi-dev
+    - libgdbm-dev
+    - libncurses5-dev
+    - libssl-dev
+    - libreadline6-dev
+    - libtool
+    - libxml2-dev
+    - libxslt1-dev
+    - libyaml-dev
+  tags:
+    - packages
+
+- name: Install a JRE if jRuby needs to be installed
+  apt: pkg=openjdk-7-jre state=present
+  when: ruby_version[:5] == "jruby"
