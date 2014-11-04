@@ -1,4 +1,9 @@
 ---
+- name: Trust mpapis GPG key so we can install signed RVM releases
+  command: gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+  sudo: true
+  sudo_user: "{{ user }}"
+
 - name: Check if RVM is installed
   command: bash -l -c 'rvm --version'
   register: rvm_is_installed
